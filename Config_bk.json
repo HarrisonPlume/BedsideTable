@@ -1,1 +1,1 @@
-{"Settings": [{"Name": "Alarm", "Enable": "False", "Time": "24:57"},{"Name":"Light","Enable":"False"}]}
+{"Settings": [{"Name": "Alarm", "Enable": "False", "Time": "06:30"}, {"Name": "Light", "LightEnable": "False"}, {"Name": "Blind", "Status": "None"}]}

@@ -164,7 +164,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="Settings">
+        <widget class="QPushButton" name="Blind">
          <property name="minimumSize">
           <size>
            <width>0</width>
@@ -190,7 +190,7 @@
           <string notr="true">border-style: solid;border-width: 0px;border-radius:0;background-color: #FFFFFF; padding:5px; color:#979797;font: 20pt &quot;Assistant&quot;;</string>
          </property>
          <property name="text">
-          <string>Settings</string>
+          <string>Blind</string>
          </property>
         </widget>
        </item>
@@ -235,15 +235,15 @@
          </property>
          <property name="font">
           <font>
-           <family>Courier</family>
-           <pointsize>22</pointsize>
+           <family>Assistant</family>
+           <pointsize>20</pointsize>
            <weight>50</weight>
            <italic>false</italic>
            <bold>false</bold>
           </font>
          </property>
          <property name="styleSheet">
-          <string notr="true">border-style: solid;border-width: 0px;border-radius:0;background-color: #FFFFFF; padding:5px;font: 22pt &quot;Courier&quot;;</string>
+          <string notr="true">border-style: solid;border-width: 0px;border-radius:0;background-color: #FFFFFF; padding:5px;font: 20pt &quot;Assistant&quot;;</string>
          </property>
          <property name="text">
           <string>10:30:00</string>
@@ -356,7 +356,7 @@ background-color: rgb(138, 138, 138);
      <x>0</x>
      <y>0</y>
      <width>800</width>
-     <height>28</height>
+     <height>21</height>
     </rect>
    </property>
   </widget>

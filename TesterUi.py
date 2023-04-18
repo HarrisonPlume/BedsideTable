@@ -29,7 +29,8 @@ import json
 
 import os
 
-os.chdir("/home/pi/Desktop/WeldingPressureTester2021")
+os.chdir("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable")
+# os.chdir("C:\BedsideTableUpgrade\CodeBase\BedsideTable")
 
 class MplCanvas(FigureCanvasQTAgg):
 
@@ -62,6 +63,8 @@ AlarmWindow, QtBaseClass = uic.loadUiType("AlarmUi.ui")
 
 WeatherWindow, QtBaseClass = uic.loadUiType("WeatherUi.ui")
 
+BlindWindow, QtBaseClass = uic.loadUiType("BlindUi.ui")
+
 class MainWindow(QtWidgets.QMainWindow, HomeWindow):
     Stopped = False    
     def __init__(self):
@@ -84,7 +87,8 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
         self.setupUi(self)
         
         #Set previously stored alarm time
-        f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r")
+        f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r")
+        # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r")
         data = json.load(f)
         for i in data["Settings"]:
             if i["Name"] == "Alarm":
@@ -107,6 +111,7 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
         self.Exit.pressed.connect(self.PressExit)
         self.Light.clicked.connect(self.PressLightMenu)
         self.Weather.pressed.connect(self.LoadWeatherUi)
+        self.Blind.pressed.connect(self.LoadBlindUi)
         #Setup Light button on home screen
         self.LightButton.setCheckable(True)
         
@@ -149,7 +154,8 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
             run('vcgencmd display_power 1', shell=True)
             
     def AlarmFunc(self):
-        f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r+")
+        f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+        # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
         data = json.load(f)
         for i in data["Settings"]:
             if i["Name"] == "Alarm":
@@ -159,16 +165,14 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
         f.truncate(0)
         json.dump(data,f)
         f.close()
-        self.LightButton.setChecked(True)
-        self.PressLightRelay()
-        
-        
-        
+        self.BlindUpFunc()
+                
                                     
     def PressLightRelay(self):
         try:
             if self.LightButton.isChecked():
-                f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r+")
+                f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+                # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
                 data = json.load(f)
                 for i in data["Settings"]:
                     if i["Name"] == "Light":
@@ -181,7 +185,8 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
                 self.LightButton.setStyleSheet('color: #FFAE0D;\nfont: 63 22pt "Assistant SemiBold";border-style: solid;border-width: 0px; padding:5px;border-radius: 20; \nbackground-color: qlineargradient(spread:pad, x1:0, y1:0, x2:1, y2:0, stop:0 rgba(255, 223, 158, 255), stop:0.2 rgba(255, 247, 232, 255));\n')
                 self.LightButton.setText("Lamp - On")
             else:
-                f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r+")
+                f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+                # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
                 data = json.load(f)
                 for i in data["Settings"]:
                     if i["Name"] == "Light":
@@ -203,6 +208,81 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
         except:
             pass 
         event.accept()
+
+
+    def LoadBlindUi(self):
+        self.setupUi(self)
+        BlindWindow.__init__(self)
+        BlindWindow.setupUi(self, self)
+        BlindWindow.retranslateUi(self, self)
+        
+        self.Home.pressed.connect(self.SetupHomeUi)
+        self.Alarm.pressed.connect(self.LoadAlarmUi)
+        self.Weather.pressed.connect(self.LoadWeatherUi)
+        self.Light.pressed.connect(self.PressLightMenu)
+        self.Exit.pressed.connect(self.PressExit)
+
+        self.BlindUp.pressed.connect(self.BlindUpFunc)
+        self.BlindDown.pressed.connect(self.BlindDownFunc)
+
+
+    def BlindUpFunc(self):
+        f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+        # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
+        data = json.load(f)
+        for i in data["Settings"]:
+            if i["Name"] == "Blind":
+                if i["Status"] == "None":
+                    i["Status"] = "Up"
+
+        f.seek(0)
+        f.truncate(0)
+        json.dump(data,f)
+        f.close()
+
+        time.sleep(0.6)
+
+        f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+        # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
+        data = json.load(f)
+        for i in data["Settings"]:
+            if i["Name"] == "Blind":
+                if i["Status"] == "Up":
+                    i["Status"] = "None"
+
+        f.seek(0)
+        f.truncate(0)
+        json.dump(data,f)
+        f.close()
+
+    def BlindDownFunc(self):
+        f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+        # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
+        data = json.load(f)
+        for i in data["Settings"]:
+            if i["Name"] == "Blind":
+                if i["Status"] == "None":
+                    i["Status"] = "Down"
+        f.seek(0)
+        f.truncate(0)
+        json.dump(data,f)
+        f.close()
+
+        time.sleep(0.6)
+
+        f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+        # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
+        data = json.load(f)
+        for i in data["Settings"]:
+            if i["Name"] == "Blind":
+                if i["Status"] == "Down":
+                    i["Status"] = "None"
+
+        f.seek(0)
+        f.truncate(0)
+        json.dump(data,f)
+        f.close()
+                    
         
         
     def PressLightMenu(self):
@@ -220,8 +300,10 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
         self.Exit.pressed.connect(self.PressExit)
         self.LightButton.setCheckable(True)
         self.LightButton.clicked.connect(self.PressLightRelay)
+        self.Blind.pressed.connect(self.LoadBlindUi)
             
-        f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r")
+        f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r")
+        # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r")
         data = json.load(f)
         for i in data["Settings"]:
             if i["Name"] == "Light":
@@ -244,6 +326,7 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
         self.Home.pressed.connect(self.SetupHomeUi)
         self.Exit.pressed.connect(self.PressExit)
         self.Alarm.pressed.connect(self.LoadAlarmUi)
+        self.Blind.pressed.connect(self.LoadBlindUi)
         
         layout = QVBoxLayout()
         
@@ -267,11 +350,6 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
         except:
             pass
         
-
-        
-        
-            
-            
         
     def LoadAlarmUi(self):
         self.setupUi(self)
@@ -283,8 +361,10 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
         self.Home.pressed.connect(self.SetupHomeUi)
         self.Exit.pressed.connect(self.PressExit)
         self.Weather.pressed.connect(self.LoadWeatherUi)
+        self.Blind.pressed.connect(self.LoadBlindUi)
         
-        f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r")
+        f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r")
+        # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r")
         data = json.load(f)
         for i in data["Settings"]:
             if i["Name"] == "Alarm":
@@ -337,7 +417,8 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
             if self.Enable.isChecked():
                 self.Enable.setText("Enable")
                 self.Enable.setStyleSheet("font: 63 30pt 'Assistant SemiBold';border-style: solid;border-width: 0px; padding:5px;border-radius: 20;background-color: rgb(138, 138, 138);")
-                f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r+")
+                f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+                # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
                 data = json.load(f)
                 for i in data["Settings"]:
                     if i["Name"] == "Alarm":
@@ -351,7 +432,8 @@ class MainWindow(QtWidgets.QMainWindow, HomeWindow):
                 if len(self.AlarmSetTime.text())>3:
                     self.Enable.setText("Disable")
                     self.Enable.setStyleSheet("font: 63 30pt 'Assistant SemiBold';border-style: solid;border-width: 0px; padding:5px;border-radius: 20;background-color: #00cc00;color: #006600;")
-                    f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r+")
+                    f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r+")
+                    # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
                     data = json.load(f)
                     for i in data["Settings"]:
                         if i["Name"] == "Alarm":
@@ -436,7 +518,8 @@ class Clock(QThread):
                     
             except:
                 pass            
-            f = open("/home/pi/Desktop/WeldingPressureTester2021/Config.json","r")
+            f = open("/home/pi/Desktop/WeldingPressureTester2021/BedsideTable/Config.json","r")
+            # f = open("C:\BedsideTableUpgrade\CodeBase\BedsideTable\Config.json","r+")
             data = json.load(f)
             for i in data["Settings"]:
                 if i["Name"] == "Alarm":
@@ -449,10 +532,32 @@ class Clock(QThread):
                 if i["Name"] == "Light":
                     if i["LightEnable"] == "True":
                         on = "1".encode("utf-8")
-                        ArduinoSerial.write(on)
+                        try:
+                            ArduinoSerial.write(on)
+                        except:
+                            pass
                     else:
                         off = "2".encode("utf-8")
-                        ArduinoSerial.write(off)
+                        try:
+                            ArduinoSerial.write(off)
+                        except:
+                            pass
+                if i["Name"] == "Blind":
+                    if i["Status"] == "Up":
+                        up = "3".encode("utf-8")
+                        print("Blind_up")
+                        try:
+                            ArduinoSerial.write(up)
+                        except:
+                            pass
+                    elif i["Status"] == "Down":
+                        down = "4".encode("utf-8")
+                        print("Blind_down")
+                        try:
+                            ArduinoSerial.write(down)
+                        except:
+                            pass
+
             f.close()
             oldtime = currenttimemins
             time.sleep(0.5)
